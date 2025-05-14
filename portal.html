@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #001f3f;
+            color: white;
+        }
+
+        .sidebar {
+            width: 200px;
+            height: calc(100vh - 60px);
+            background-color: #001233;
+            position: fixed;
+            left: 0;
+            top: 60px;
+            padding: 20px;
+            box-shadow: 2px 0 10px skyblue;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            color: white;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 15px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            display: block;
+            text-shadow: 1px 1px 2px skyblue;
+        }
+
+        .sidebar ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #001233;
+            padding: 10px 15px;
+            box-shadow: 0 2px 10px skyblue;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .top-bar h1 {
+            margin: 0;
+            font-size: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px skyblue;
+        }
+
+        .top-bar .action-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .top-bar .action-buttons input[type="text"] {
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .top-bar .action-buttons button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #0056b3;
+            color: white;
+            box-shadow: 2px 2px 5px skyblue;
+        }
+
+        .top-bar .action-buttons button:hover {
+            background-color: #0077cc;
+        }
+
+        .main-content {
+            margin-left: 200px;
+            margin-top: 60px;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .main-content h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px skyblue;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .feature-icon {
+            background-color: #001233;
+            color: white;
+            font-size: 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px skyblue;
+        }
+
+        .feature-icon:hover {
+            background-color: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px skyblue;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-bar">
+        <h1>Admin Dashboard</h1>
+        <div class="action-buttons">
+            <input type="text" id="search-box" placeholder="Search...">
+            <button onclick="search()">Search</button>
+            <button onclick="openModal('login-modal')">Login</button>
+            <button onclick="openModal('signup-modal')">Sign Up</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="#" onclick="showSection('home')">Home</a></li>
+            <li><a href="#" onclick="showSection('personal-info')">Personal Info</a></li>
+            <li><a href="#" onclick="showSection('reports')">Reports</a></li>
+            <li><a href="#" onclick="showSection('settings')">Settings</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h2>Welcome to User Dashboard</h2>
+
+        <div>
+            <span class="feature-icon" onclick="openModal('registration-modal')">Registration</span>
+            <span class="feature-icon" onclick="openModal('feedback-modal')">Feedback</span>
+        </div>
+
+        <div id="registration-modal" class="modal">
+            <h2>Registration Form</h2>
+            <form>
+                <input type="text" placeholder="Full Name" required><br>
+                <input type="email" placeholder="Email" required><br>
+                <input type="password" placeholder="Password" required><br>
+                <button type="submit" onclick="closeModal()">Register</button>
+            </form>
+        </div>
+
+        <div id="feedback-modal" class="modal">
+            <h2>Feedback</h2>
+            <textarea placeholder="Enter your feedback here..." rows="5" style="width: 100%;" required></textarea><br>
+            <button type="button" onclick="submitFeedback()">Submit Feedback</button>
+        </div>
+
+        <!-- Other content sections remain the same -->
+    </div>
+
+    <div id="overlay" class="overlay" onclick="closeModal()"></div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach((modal) => modal.classList.remove('active'));
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        function submitFeedback() {
+            alert('Feedback submitted successfully!');
+            closeModal();
+        }
+    </script>
+</body>
+
+</html>
